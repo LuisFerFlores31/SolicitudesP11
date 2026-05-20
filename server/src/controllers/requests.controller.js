@@ -34,16 +34,14 @@ async function getById(req, res) {
 }
 
 async function create(req, res) {
-  const { title, description, area_id, category_id } = req.body
-  if (!title || !area_id) return res.status(400).json({ error: 'Título y área son requeridos' })
-
+  const { title, description, area_id, category_id, priority } = req.body
   const userId = req.session.userId
 
   try {
     const result = await pool.query(
-      `INSERT INTO requests (title, description, status, user_id, area_id, category_id)
-       VALUES ($1, $2, 'pending', $3, $4, $5) RETURNING *`,
-      [title, description, userId, area_id, category_id || null]
+      `INSERT INTO requests (title, description, status, priority, user_id, area_id, category_id)
+       VALUES ($1, $2, 'pending', $3, $4, $5, $6) RETURNING *`,
+      [title, description, priority, userId, area_id, category_id || null]
     )
     res.status(201).json(result.rows[0])
   } catch (err) {

@@ -21,7 +21,6 @@ async function getById(req, res) {
 
 async function create(req, res) {
   const { name, description } = req.body
-  if (!name) return res.status(400).json({ error: 'El nombre es requerido' })
 
   try {
     const result = await pool.query(
@@ -36,7 +35,6 @@ async function create(req, res) {
 
 async function update(req, res) {
   const { name, description } = req.body
-  if (!name) return res.status(400).json({ error: 'El nombre es requerido' })
 
   try {
     const result = await pool.query(
