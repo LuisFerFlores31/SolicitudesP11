@@ -1,6 +1,6 @@
 const pool = require('../config/db')
 
-async function getAll(req, res) {
+async function getAll(req, res, next) {
   try {
     const result = await pool.query(`
       SELECT r.*, u.name AS user_name, a.name AS area_name, c.name AS category_name
@@ -12,11 +12,11 @@ async function getAll(req, res) {
     `)
     res.json(result.rows)
   } catch (err) {
-    res.status(500).json({ error: 'Error interno del servidor' })
+    next(err)
   }
 }
 
-async function getById(req, res) {
+async function getById(req, res, next) {
   try {
     const result = await pool.query(`
       SELECT r.*, u.name AS user_name, a.name AS area_name, c.name AS category_name
@@ -29,11 +29,11 @@ async function getById(req, res) {
     if (!result.rows[0]) return res.status(404).json({ error: 'Solicitud no encontrada' })
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).json({ error: 'Error interno del servidor' })
+    next(err)
   }
 }
 
-async function create(req, res) {
+async function create(req, res, next) {
   const { title, description, area_id, category_id, priority } = req.body
   const userId = req.session.userId
 
@@ -45,11 +45,11 @@ async function create(req, res) {
     )
     res.status(201).json(result.rows[0])
   } catch (err) {
-    res.status(500).json({ error: 'Error interno del servidor' })
+    next(err)
   }
 }
 
-async function update(req, res) {
+async function update(req, res, next) {
   const { title, description, status, area_id, category_id } = req.body
 
   try {
@@ -71,17 +71,17 @@ async function update(req, res) {
     )
     res.json(result.rows[0])
   } catch (err) {
-    res.status(500).json({ error: 'Error interno del servidor' })
+    next(err)
   }
 }
 
-async function remove(req, res) {
+async function remove(req, res, next) {
   try {
     const result = await pool.query('DELETE FROM requests WHERE id = $1 RETURNING id', [req.params.id])
     if (!result.rows[0]) return res.status(404).json({ error: 'Solicitud no encontrada' })
     res.json({ message: 'Solicitud eliminada' })
   } catch (err) {
-    res.status(500).json({ error: 'Error interno del servidor' })
+    next(err)
   }
 }
 
